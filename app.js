@@ -2,6 +2,21 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 
+// MONGO
+var MongoClient = require('mongodb').MongoClient
+  , assert = require('assert');
+
+var url = 'mongodb://localhost:27017';
+
+MongoClient.connect(url, function(err, db) {
+  assert.equal(null, err);
+  console.log("Connected correctly to Mongo server");
+
+  db.close();
+});
+//
+
+
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({
   extended: false
