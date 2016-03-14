@@ -3,16 +3,12 @@ var app = express();
 var bodyParser = require('body-parser');
 
 app.use(express.static('public'));
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-  extended: true
+  extended: false
 }));
 
 app.get('/register', function (req, res) {
-  var options = {
-    root: '/public'
-  }
-  var fileName = './views/registration.html'
+  var fileName = __dirname + '/views/registration.html'
   res.sendFile(fileName, function (err) {
     if (err) {
       console.log(err);
