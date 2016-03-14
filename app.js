@@ -1,8 +1,12 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 
-// MONGO
+// MONGO CLIENT
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
 
@@ -12,15 +16,28 @@ MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("Connected correctly to Mongo server");
 
-  db.close();
+  insertDocuments(db, function() {
+    db.close();
+  });
 });
 //
 
+// MONGO DOCUMENT INSERTION
+var insertDocuments = function(db, callback) {
+  var collection = db.collection('teams');
 
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
+  collection.insert({
+    team_name: "test name", 
+    email: "test email"
+  }, function (err, result) {
+    assert.equal(err, null);
+    assert.equal(1, result.result.n);
+    assert.equal(1, result.ops.length);
+    console.log("Inserted 1 document into the document collection");
+    callback(result);
+  });
+}
+//
 
 app.get('/register', function (req, res) {
   var fileName = __dirname + '/views/registration.html'
