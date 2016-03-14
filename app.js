@@ -17,7 +17,9 @@ MongoClient.connect(url, function(err, db) {
   console.log("Connected correctly to Mongo server");
 
   insertDocuments(db, function() {
-    db.close();
+    findDocuments(db, function() {
+      db.close();
+    });
   });
 });
 //
@@ -38,6 +40,17 @@ var insertDocuments = function(db, callback) {
   });
 }
 //
+
+// MONGO RETURN ALL DOCUMENTS
+var findDocuments = function(db, callback) {
+  var collection = db.collection('teams');
+  collection.find({}).toArray(function(err, docs) {
+    assert.equal(err, null);
+    console.log("Found the following records:");
+    console.dir(docs);
+    callback(docs);
+  });
+}
 
 app.get('/register', function (req, res) {
   var fileName = __dirname + '/views/registration.html'
