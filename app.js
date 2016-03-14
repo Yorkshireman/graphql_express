@@ -9,7 +9,19 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get('/register', function (req, res) {
-  res.sendfile('./views/registration.html');
+  var options = {
+    root: '/public'
+  }
+  var fileName = './views/registration.html'
+  res.sendFile(fileName, function (err) {
+    if (err) {
+      console.log(err);
+      res.status(err.status).end();
+    }
+    else {
+      console.log('Sent:', fileName);
+    }
+  });
 });
 
 app.post('/register', function (req, res) {
