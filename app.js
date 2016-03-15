@@ -12,25 +12,23 @@ var MongoClient = require('mongodb').MongoClient
 
 var url = 'mongodb://localhost:27017';
 
-MongoClient.connect(url, function(err, db) {
-  assert.equal(null, err);
-  console.log("Connected correctly to Mongo server");
+// MongoClient.connect(url, function(err, db) {
+//   assert.equal(null, err);
+//   console.log("Connected correctly to Mongo server");
 
-  insertDocuments(db, function() {
-    findDocuments(db, function() {
-      db.close();
-    });
-  });
-});
+//   findDocuments(db, function() {
+//     db.close();
+//   });
+// });
 //
 
 // MONGO DOCUMENT INSERTION
-var insertDocuments = function(db, callback) {
+var insertDocuments = function(db, team_name, email, callback) {
   var collection = db.collection('teams');
 
   collection.insert({
-    team_name: "test name", 
-    email: "test email"
+    team_name: team_name, 
+    email: email
   }, function (err, result) {
     assert.equal(err, null);
     assert.equal(1, result.result.n);
@@ -42,7 +40,7 @@ var insertDocuments = function(db, callback) {
 //
 
 // MONGO RETURN ALL DOCUMENTS
-var findDocuments = function(db, callback) {
+var showAllDocuments = function(db, callback) {
   var collection = db.collection('teams');
   collection.find({}).toArray(function(err, docs) {
     assert.equal(err, null);
@@ -66,7 +64,17 @@ app.get('/register', function (req, res) {
 });
 
 app.post('/register', function (req, res) {
-  console.log(req.body)
+  console.log("SUBMITTED FORM DATA:");
+  console.log(req.body);
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    console.log("Connected correctly to Mongo server");
+    insertDocuments(db, req.body.team_name, req.body.email, function() {
+      showAllDocuments(db, function() {
+        db.close();
+      })
+    });
+  });
 });
 
 app.listen(3000, function () {
